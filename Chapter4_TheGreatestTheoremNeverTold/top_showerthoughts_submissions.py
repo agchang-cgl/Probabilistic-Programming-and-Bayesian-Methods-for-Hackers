@@ -6,10 +6,10 @@ from IPython.core.display import Image
 import praw
 
 
-reddit = praw.Reddit("BayesianMethodsForHackers")
-subreddit  = reddit.get_subreddit("showerthoughts")
+reddit = praw.Reddit(client_id="3tGpc7FJeHhOag", client_secret="SSBymfcpf00fRV-JLIQTvjTwWd4X8A", user_agent="test")
+subreddit  = reddit.subreddit("showerthoughts")
 
-top_submissions = subreddit.get_top(limit=100)
+top_submissions = subreddit.top(limit=100)
 
 n_sub = int( sys.argv[1] ) if sys.argv[1] else 1
 
@@ -26,11 +26,12 @@ contents = []
 
 for sub in top_submissions:
     try:
-        ratio = reddit.get_submission(sub.permalink).upvote_ratio
+        ratio = sub.upvote_ratio
         ups = int(round((ratio*sub.score)/(2*ratio - 1)) if ratio != 0.5 else round(sub.score/2))
         upvotes.append(ups)
         downvotes.append(ups - sub.score)
         contents.append(sub.title)
     except Exception as e:
+        print(e)
         continue
 votes = np.array( [ upvotes, downvotes] ).T
